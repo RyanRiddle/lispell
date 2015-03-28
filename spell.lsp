@@ -1,14 +1,23 @@
 ; Spellcheck program in lisp inspired by Peter Norvig's spellcheck algorithm
 ; Ryan Riddle (http://github.com/RyanRiddle
 
-(defparameter *dictionary* '("cheese" "bread" "turkey" "mustard" "water" "sandwich"))
+(defparameter *dictionary* nil)
 (defparameter *alphabet* "abcdefghijklmnopqrstuvwxyz")
 
 (defun add (word)
     (push word *dictionary*))
+
+(defun read-dict (dict)
+	(print "Reading dictionary...")
+	(with-open-file (s dict)
+        (do ((l (read-line s) (read-line s nil 'eof)))
+            ((eq l 'eof) "Done.")
+        (add l))))
 	
 (defun check (word)
-    (member word *dictionary* :test #'equal))
+    (if (member word *dictionary* :test #'equal)
+		t
+		nil))
 	 
 (defun remove-at (pos seq)
 	(concatenate
