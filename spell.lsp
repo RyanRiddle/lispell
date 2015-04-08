@@ -37,11 +37,10 @@
 		(list ch)
 		(subseq seq (+ pos 1) (length seq))))
 
-; there's got to be better way to swap two values in a sequence
 (defun transpose-at (pos1 pos2 seq)
-	(let ((tmp (elt seq pos1)))
-		(replace-at tmp pos2
-			(replace-at (elt seq pos2) pos1 seq))))
+	(let ((word (coerce seq 'list)))
+		(rotatef (nth pos1 word) (nth pos2 word))
+		(coerce word 'string)))
 
 (defun gen-deletes (word)
     (let ((deletes nil))
