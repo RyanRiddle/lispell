@@ -2,10 +2,17 @@
 ; Ryan Riddle (http://github.com/RyanRiddle
 
 (defparameter *dictionary* nil)
+(defparameter *misspellings* nil)
 (defparameter *alphabet* "abcdefghijklmnopqrstuvwxyz")
 
 (defun add (word)
     (push word *dictionary*))
+
+(defun add-misspelling (incorrect correct)
+	(let ((entry (assoc incorrect *misspellings* :test #'equal)))
+		(if entry 
+			(push correct (cadr entry))
+			(push `(,incorrect (,correct)) *misspellings*))))
 
 (defun read-dict (dict)
 	(print "Reading dictionary...")
@@ -47,6 +54,7 @@
 		(dotimes (i (length word))
 			(push (remove-at i word) deletes))
 		deletes))
+
 		
 (defun gen-inserts (word)
     (let ((inserts nil))
@@ -68,11 +76,16 @@
 			(loop for j from (+ i 1) to (- (length word) 1) do
 				(push (transpose-at i j word) transposes)))
 		transposes))
+
+(defun build-misspellings ()
+	(dolist (word *dictionary*)
+		(let* ((del-dist1 (remove-duplicates (gen-deletes word) :test #'equal))
+				(del-dist2 (apply #'append (mapcar #'gen-deletes del-dist1)))
+				(deletes (remove-duplicates (append del-dist1 del-dist2) :test #'equal)))
+			(dolist (misspelling deletes)
+				(add-misspelling misspelling word)))))
 		
 (defun suggest (word)
 	(if (check word)
 		nil
-		(let ((possibilities (append (gen-inserts word) (gen-deletes word) (gen-replaces word) (gen-transposes word))))
-			(remove-duplicates
-				(remove-if-not (lambda (x) (check x)) possibilities)
-				 :test #'equal))))
+		(cadr (assoc word *misspellings* :test #'equal))))
