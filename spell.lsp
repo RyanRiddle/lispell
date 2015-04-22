@@ -79,13 +79,21 @@
 
 (defun build-misspellings ()
 	(dolist (word *dictionary*)
-		(let* ((del-dist1 (remove-duplicates (gen-deletes word) :test #'equal))
-				(del-dist2 (apply #'append (mapcar #'gen-deletes del-dist1)))
-				(deletes (remove-duplicates (append del-dist1 del-dist2) :test #'equal)))
+		(let ((deletes (get-ed2-deletes word)))
 			(dolist (misspelling deletes)
 				(add-misspelling misspelling word)))))
+				
+(defun get-ed2-deletes (word)
+	(let* ((del-dist1 (remove-duplicates (gen-deletes word) :test #'equal))
+				(del-dist2 (apply #'append (mapcar #'gen-deletes del-dist1)))
+				(deletes (remove-duplicates (append del-dist1 del-dist2) :test #'equal)))
+				deletes))
 		
 (defun suggest (word)
 	(if (check word)
 		nil
-		(cadr (assoc word *misspellings* :test #'equal))))
+		(let* ((deletes (get-ed2-deletes word))
+				(sugs (mapcar (lambda (del)
+						(cadr (assoc del *misspellings* :test #'equal)))
+						deletes)))
+			(remove-duplicates (apply #'append sugs) :test #'equal ))))
