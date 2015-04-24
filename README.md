@@ -18,6 +18,7 @@ Check words like this.  For example, butter and cheese.
 If you want suggestions for misspelled words, do this.
 
    `(build-misspellings)`
+   `; returns NIL`
    
 Note: This operation may take some time.  For a dictionary of ~100,000 words it took about two minutes to complete on my machine.  I would suggest computing this once and store the resulting hash-table ina file that can be loaded each time you want to use the spellchecker.  Don't worry.  The wait is worth it.
    
@@ -25,6 +26,11 @@ Get suggestions like this.
    
    `(suggest "chese")`
    `; returns ("cheese" "chest" "these" "chess" "chose" "chase")`
+   
+If you pass a correctly spelled word to suggest, it returns NIL.
+
+   `(suggest "cheese")`
+   ; returns NIL
 
 ##Implementation Details
 
