@@ -10,10 +10,13 @@
 ;    (push word *dictionary*))
 
 (defun add-misspelling (incorrect correct)
-	(let ((entry (assoc incorrect *misspellings* :test #'equal)))
-		(if entry 
-			(push correct (cadr entry))
-			(push `(,incorrect (,correct)) *misspellings*))))
+	(if (gethash incorrect *misspellings*)
+		(push correct (gethash incorrect *misspellings*))
+		(setf (gethash incorrect *misspellings*) `(,correct))))
+;		(let ((entry (assoc incorrect *misspellings* :test #'equal)))
+;			(if entry 
+;				(push correct (cadr entry))
+;				(push `(,incorrect (,correct)) *misspellings*))))
 
 (defun read-dict (dict)
 	(print "Reading dictionary...")
@@ -77,10 +80,11 @@
 		transposes))
 
 (defun build-misspellings ()
-	(dolist (word *dictionary*)
-		(let ((deletes (get-ed2-deletes word)))
-			(dolist (misspelling deletes)
-				(add-misspelling misspelling word)))))
+	(flet ((build-for-word (word b)
+				(let ((deletes (get-ed2-deletes word)))
+					(dolist (misspelling deletes)
+						(add-misspelling misspelling word)))))
+		(maphash #'build-for-word *dictionary*)))
 				
 (defun get-ed2-deletes (word)
 	(let* ((del-dist1 (remove-duplicates (gen-deletes word) :test #'equal))
@@ -93,6 +97,6 @@
 		nil
 		(let* ((deletes (get-ed2-deletes word))
 				(sugs (mapcar (lambda (del)
-						(cadr (assoc del *misspellings* :test #'equal)))
+								(gethash del *misspellings*))
 						deletes)))
 			(remove-duplicates (apply #'append sugs) :test #'equal ))))
