@@ -1,12 +1,13 @@
 ; Spellcheck program in lisp inspired by Peter Norvig's spellcheck algorithm
 ; Ryan Riddle (http://github.com/RyanRiddle
 
-(defparameter *dictionary* nil)
-(defparameter *misspellings* nil)
+(defparameter *dictionary* (make-hash-table :test #'equal))
+(defparameter *misspellings* (make-hash-table :test #'equal))
 (defparameter *alphabet* "abcdefghijklmnopqrstuvwxyz")
 
 (defun add (word)
-    (push word *dictionary*))
+	(setf (gethash word *dictionary*) t))
+;    (push word *dictionary*))
 
 (defun add-misspelling (incorrect correct)
 	(let ((entry (assoc incorrect *misspellings* :test #'equal)))
@@ -22,10 +23,8 @@
         (add l))))
 	
 (defun check (word)
-    (if (member word *dictionary* :test #'equal)
-		t
-		nil))
-	 
+	(gethash word *dictionary*))	
+ 
 (defun remove-at (pos seq)
 	(concatenate
 		'string
