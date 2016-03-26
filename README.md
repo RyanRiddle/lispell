@@ -20,7 +20,7 @@ If you want suggestions for misspelled words, do this.
    `(build-misspellings)`
    `; returns NIL`
    
-Note: This operation may take some time.  For a dictionary of ~100,000 words it took about two minutes to complete on my machine.  I would suggest computing this once and store the resulting hash-table ina file that can be loaded each time you want to use the spellchecker.  Don't worry.  The wait is worth it.
+Note: This operation may take some time.  For a dictionary of ~100,000 words it took about 15 seconds in SBCL and about 2 minutes in CLISP.
    
 Get suggestions like this.
    
@@ -45,7 +45,7 @@ The advantage of this algorithm is that it returns suggestions in O(1) time.
 Use hunspell-style dictionaries with an affix file and a dictionary file.
 
 ##Compatibility
-Tested with CLISP v 2.49
+Tested with SBCL v1.1.14.debian and CLISP v2.49
 
 ##License
 Use it.  I don't care how.
